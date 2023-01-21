@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using FirstApi2.Models;
+using FirstApi2.ServiceLayer;
 
 namespace FirstApi2.Controllers
 {
@@ -13,39 +14,33 @@ namespace FirstApi2.Controllers
     [ApiController]
     public class ContainController : ControllerBase
     {
-        private readonly FlightBookingDbContext _context;
+        public static readonly log4net.ILog _log4net = log4net.LogManager.GetLogger(typeof(ContainController));
 
-        public ContainController(FlightBookingDbContext context)
+        public static IContainService<Contain> containService;
+
+        public ContainController(IContainService<Contain> _containService)
         {
-            _context = context;
+            containService = _containService;
         }
 
         // GET: api/Contain
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Contain>>> GetContains()
         {
-          if (_context.Contains == null)
-          {
-              return NotFound();
-          }
-            return await _context.Contains.ToListAsync();
+            _log4net.Info("Get Contains method is called");
+            return Ok(containService.GetAllContains());
         }
 
         // GET: api/Contain/5
         [HttpGet("{id}")]
         public async Task<ActionResult<Contain>> GetContain(int id)
         {
-          if (_context.Contains == null)
-          {
-              return NotFound();
-          }
-            var contain = await _context.Contains.FindAsync(id);
-
+            _log4net.Info("Get Contain by id with" + id + "id is called");
+            var contain = containService.GetContainById(id);
             if (contain == null)
             {
-                return NotFound();
+                _log4net.Info("No product is found with id:" + id);
             }
-
             return contain;
         }
 
@@ -54,30 +49,10 @@ namespace FirstApi2.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> PutContain(int id, Contain contain)
         {
-            if (id != contain.Pid)
-            {
-                return BadRequest();
-            }
+            containService.UpdateContain(id,contain);
+            _log4net.Info("Product id" + id + "is updated");
 
-            _context.Entry(contain).State = EntityState.Modified;
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!ContainExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
-            return NoContent();
+            return Ok();
         }
 
         // POST: api/Contain
@@ -85,53 +60,18 @@ namespace FirstApi2.Controllers
         [HttpPost]
         public async Task<ActionResult<Contain>> PostContain(Contain contain)
         {
-          if (_context.Contains == null)
-          {
-              return Problem("Entity set 'FlightBookingDbContext.Contains'  is null.");
-          }
-            _context.Contains.Add(contain);
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateException)
-            {
-                if (ContainExists(contain.Pid))
-                {
-                    return Conflict();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
-            return CreatedAtAction("GetContain", new { id = contain.Pid }, contain);
+            containService.AddContain(contain);
+            _log4net.Info("Product id" + contain.Pid + "is added");
+            return Ok();
         }
 
         // DELETE: api/Contain/5
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteContain(int id)
         {
-            if (_context.Contains == null)
-            {
-                return NotFound();
-            }
-            var contain = await _context.Contains.FindAsync(id);
-            if (contain == null)
-            {
-                return NotFound();
-            }
-
-            _context.Contains.Remove(contain);
-            await _context.SaveChangesAsync();
-
-            return NoContent();
-        }
-
-        private bool ContainExists(int id)
-        {
-            return (_context.Contains?.Any(e => e.Pid == id)).GetValueOrDefault();
+            containService.RemoveContain(id);
+            _log4net.Info("Product id" + id + "is removed");
+            return Ok();
         }
     }
 }

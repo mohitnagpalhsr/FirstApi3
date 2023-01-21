@@ -1,3 +1,6 @@
+using FirstApi2.Models;
+using FirstApi2.RepoLayer;
+using FirstApi2.ServiceLayer;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -8,12 +11,27 @@ var connectionString = builder.Configuration.GetConnectionString("DefaultConnect
 builder.Services.AddDbContext<FirstApi2.Models.FlightBookingDbContext>(options =>
     options.UseSqlServer(connectionString));
 
+
+//builder.Services.AddSingleton<IContainRepo<Contain>, ContainRepo>();
+
+builder.Services.AddTransient<IContainRepo<Contain>, ContainRepo>();
+builder.Services.AddTransient<IContainService<Contain>, ContainService>();
+
+//builder.Services.AddScoped<IContainService<Contain>, ContainService>();
+//builder.Services.AddSingleton<IContainService<Contain>, ContainService>();
+builder.Logging.AddLog4Net();
+
+
+
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
+
+//LoggerFactory log= new LoggerFactory();
+//log.AddLog4Net();
 
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
