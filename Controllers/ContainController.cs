@@ -14,7 +14,7 @@ namespace FirstApi2.Controllers
     [ApiController]
     public class ContainController : ControllerBase
     {
-        public static readonly log4net.ILog _log4net = log4net.LogManager.GetLogger(typeof(ContainController));
+        //public static readonly log4net.ILog _log4net = log4net.LogManager.GetLogger(typeof(ContainController));
 
         public static IContainService<Contain> containService;
 
@@ -27,7 +27,7 @@ namespace FirstApi2.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Contain>>> GetContains()
         {
-            _log4net.Info("Get Contains method is called");
+            //_log4net.Info("Get Contains method is called");
             return Ok(containService.GetAllContains());
         }
 
@@ -35,11 +35,11 @@ namespace FirstApi2.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<Contain>> GetContain(int id)
         {
-            _log4net.Info("Get Contain by id with" + id + "id is called");
+            //_log4net.Info("Get Contain by id with" + id + "id is called");
             var contain = containService.GetContainById(id);
             if (contain == null)
             {
-                _log4net.Info("No product is found with id:" + id);
+                //_log4net.Info("No product is found with id:" + id);
             }
             return contain;
         }
@@ -50,7 +50,7 @@ namespace FirstApi2.Controllers
         public async Task<IActionResult> PutContain(int id, Contain contain)
         {
             containService.UpdateContain(id,contain);
-            _log4net.Info("Product id" + id + "is updated");
+            //_log4net.Info("Product id" + id + "is updated");
 
             return Ok();
         }
@@ -61,7 +61,7 @@ namespace FirstApi2.Controllers
         public async Task<ActionResult<Contain>> PostContain(Contain contain)
         {
             containService.AddContain(contain);
-            _log4net.Info("Product id" + contain.Pid + "is added");
+            //_log4net.Info("Product id" + contain.Pid + "is added");
             return Ok();
         }
 
@@ -70,7 +70,7 @@ namespace FirstApi2.Controllers
         public async Task<IActionResult> DeleteContain(int id)
         {
             containService.RemoveContain(id);
-            _log4net.Info("Product id" + id + "is removed");
+            //_log4net.Info("Product id" + id + "is removed");
             return Ok();
         }
     }

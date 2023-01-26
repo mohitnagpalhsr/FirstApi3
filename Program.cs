@@ -19,9 +19,9 @@ builder.Services.AddTransient<IContainService<Contain>, ContainService>();
 
 //builder.Services.AddScoped<IContainService<Contain>, ContainService>();
 //builder.Services.AddSingleton<IContainService<Contain>, ContainService>();
-builder.Logging.AddLog4Net();
+//builder.Logging.AddLog4Net();
 
-
+builder.Services.AddCors();
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -39,6 +39,8 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+app.UseCors(x => x.AllowAnyMethod().AllowAnyOrigin().AllowAnyHeader());
 
 app.UseHttpsRedirection();
 
